@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html style="width: 100%;height: 100%">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no"> 
+<title>UAV</title>
+</head>
+
+<style type="text/css">
+#container {width:100%; height: 100%; }
+</style>
+
+<body style="width: 100%;height: 100%">
+    <div id="container"></div> 
+</body>
+
+<script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode:'c33e4852416216f320768c7aed02e1a3',
+        }
+</script>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=1229ea463b2abeb3b2622717cade9cf3"></script> 
+
+<script type="text/javascript">
+        
+		 
+		   var map = new AMap.Map('container', {
+        zoom:11,//级别
+        center: [116.397428, 39.90923],//中心点坐标
+        viewMode:'3D'//使用3D视图
+    });
+</script>
+</html>
