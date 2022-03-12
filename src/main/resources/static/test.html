@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+经度：<input type="text" id="longitude" value="116.483633" required/><br/>
+纬度：<input type="text" id="latitude" value="39.998935" required/><br/>
+<input id="submit" type="submit" value="绘制"><br/>
+</body>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#submit").click(function () {
+            $.ajax(
+                {
+                    url: 'http://47.99.121.32:8080/uav_dispatch/send',
+                    type: 'post',
+                    dateType: 'json',
+                    headers: {'Content-Type': 'application/json;charset=utf8'},
+                    data: JSON.stringify({
+                        "longitude": parseFloat($("#longitude").val()),
+                        "latitude": parseFloat($("#latitude").val())
+                    }),
+                    success: function (data) {
+                        console.log("sucess");
+                    },
+                    error: function (data) {
+                        console.log("error");
+                    }
+                }
+            );
+        });
+    });
+</script>
+</html>
