@@ -50,6 +50,7 @@ public class NewChannelConnectedHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void sendMessage(Integer channlNumber, String message) {
+        System.out.println("发送消息给SSY:" + channlNumber + " " + CONNECTION_MAPPINGS.get(channlNumber));
         CONNECTION_MAPPINGS.get(channlNumber).writeAndFlush(message);
     }
 }
