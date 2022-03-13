@@ -1,6 +1,7 @@
 package com.ssy.uav_dispatch.tcp;
 
 import com.ssy.uav_dispatch.tcp.handler.CoordinateTcpHandler;
+import com.ssy.uav_dispatch.tcp.handler.NewChannelConnectedHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -23,6 +24,9 @@ public class TcpServer {
     @Resource
     private CoordinateTcpHandler coordinateTcpHandler;
 
+    @Resource
+    private NewChannelConnectedHandler newChannelConnectedHandler;
+
     @PostConstruct
     public void init() {
         new Thread(() -> {
@@ -41,6 +45,7 @@ public class TcpServer {
                         .childHandler(new ChannelInitializer<SocketChannel>() {
                             @Override
                             protected void initChannel(SocketChannel ch) throws Exception {
+                                ch.pipeline().addLast(newChannelConnectedHandler);
                                 ch.pipeline().addLast(coordinateTcpHandler);
                             }
                         });

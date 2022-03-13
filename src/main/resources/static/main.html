@@ -6,7 +6,6 @@
     <title>UAV</title>
 </head>
 <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
-
 <style type="text/css">
     #container {
         width: 100%;
@@ -23,19 +22,41 @@
         overflow: auto;
     }
 
+    #start {
+        margin: auto;
+        left: 0;
+        right: 0;
+        bottom: 60%;
+        color: aliceblue;
+        background: black;
+    }
 </style>
 
 <body style="width: 100%;height: 100%">
 <div id="container"></div>
 
 <div id="cmd" class="input-card">
-    <h3>无人机信息:</h3>
+    <h3>无人机连接信息</h3>
     <div id="cmdInfo" class="input-item">
 
     </div>
 </div>
-</body>
 
+
+<div id="start" class="input-card" style="font-size: 15px;">
+    <h3>启动无人机设备</h3>
+    <div class="input-item">
+        <input id="deviceNumber" type="number" placeholder="请输入待启动设备编号"/>
+    </div>
+    <div class="input-item">
+        <input id="file" type="file" placeholder="请上传"/>
+    </div>
+    <div class="input-item">
+        <button id="startDevice" class="btn">启动</button>
+    </div>
+</div>
+</body>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 <script type="text/javascript">
     window._AMapSecurityConfig = {
         securityJsCode: 'c33e4852416216f320768c7aed02e1a3',
@@ -44,7 +65,7 @@
 <script type="text/javascript"
         src="https://webapi.amap.com/maps?v=1.4.15&key=1229ea463b2abeb3b2622717cade9cf3"></script>
 
-<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+
 <script type="text/javascript">
 
     var map = new AMap.Map('container', {
@@ -54,41 +75,10 @@
         viewMode: '3D'//使用3D视图
     });
 
-    var marker = new AMap.Marker({
-        map: map,
-        position: [116.478935, 39.997761],
-        icon: "http://localhost:8080/uav_dispatch/fly.png",
-        offset: new AMap.Pixel(-26, -13),
-        autoRotation: true,
-        angle: -90,
-    });
-
-    var passedPolyline = new AMap.Polyline({
-        map: map,
-        path: [],
-        strokeColor: "#ff0000",  //线颜色
-        // strokeOpacity: 1,     //线透明度
-        strokeWeight: 6,      //线宽
-        // strokeStyle: "solid"  //线样式
-    });
-    marker.on('moving', function (e) {
-        var passedPolyline = new AMap.Polyline({
-            map: map,
-            path: [],
-            strokeColor: "#ff0000",  //线颜色
-            // strokeOpacity: 1,     //线透明度
-            strokeWeight: 6,      //线宽
-            // strokeStyle: "solid"  //线样式
-        });
-        passedPolyline.setPath(e.passedPath);
-    });
-
-
 </script>
 
 <script>
     var socket;
-    var firstReceveMeg = false;
 
     function openSocket() {
         if (typeof(WebSocket) == "undefined") {
@@ -96,11 +86,9 @@
         } else {
             console.log("您的浏览器支持WebSocket");
             //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
-            var uid = getQueryVariable("device");
-            var socketUrl = "ws://localhost:8080/uav_dispatch/websocket/" + uid;
+            var socketUrl = "ws://localhost:8080/uav_dispatch/websocket/main";
             console.log(socketUrl);
             if (socket != null) {
-                F
                 socket.close();
                 socket = null;
             }
@@ -113,18 +101,7 @@
             socket.onmessage = function (msg) {
                 var serverMsg = "收到服务端信息：" + msg.data;
                 console.log(serverMsg);
-                // 转化为经纬度
-                var jsonData = JSON.parse(msg.data);
-
-                if (jsonData.coordinate) {
-                    draw(jsonData.coordinate);
-                    firstReceveMeg = true;
-                } else {
-                    // 额外信息
-
-                }
                 $("#cmdInfo").html($("#cmdInfo").html() + msg.data + '<br/>');
-
             };
             //关闭事件
             socket.onclose = function () {
@@ -139,28 +116,22 @@
 
     openSocket();
 
-    function draw(coordinateJsonInfo) {
+</script>
 
-        // 判断是否需要重置初始位置
-        if (!firstReceveMeg) {
-            marker.setPosition(new AMap.LngLat(coordinateJsonInfo.longitude, coordinateJsonInfo.latitude))
-        } else {
-            marker.moveTo(new AMap.LngLat(coordinateJsonInfo.longitude, coordinateJsonInfo.latitude), 200);
-        }
-        // 缩放地图到合适的视野级别
-        map.setFitView()
-    }
+<script>
+    $(document).ready(function () {
+        $("#startDevice").click(function () {
+            // 发送消息启动设备
+            var deviceNumber = $("#deviceNumber").val();
+            var msgInfo = {
+                "operation": "start",
+                "operationDeviceNumber": deviceNumber
+            };
+            socket.send(JSON.stringify(msgInfo));
 
-    function getQueryVariable(variable) {
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split("=");
-            if (pair[0] == variable) {
-                return pair[1];
-            }
-        }
-        return (false);
-    }
+            window.open("http://localhost:8080/uav_dispatch/index?device=" + deviceNumber)
+        })
+
+    });
 </script>
 </html>

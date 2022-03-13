@@ -15,13 +15,15 @@
         $("#submit").click(function () {
             $.ajax(
                 {
-                    url: 'http://47.99.121.32:8080/uav_dispatch/send',
+                    url: 'http://localhost:8080/uav_dispatch/send',
                     type: 'post',
                     dateType: 'json',
                     headers: {'Content-Type': 'application/json;charset=utf8'},
                     data: JSON.stringify({
-                        "longitude": parseFloat($("#longitude").val()),
-                        "latitude": parseFloat($("#latitude").val())
+                        "coordinate": {
+                            "longitude": parseFloat($("#longitude").val()),
+                            "latitude": parseFloat($("#latitude").val())
+                        }
                     }),
                     success: function (data) {
                         console.log("sucess");
