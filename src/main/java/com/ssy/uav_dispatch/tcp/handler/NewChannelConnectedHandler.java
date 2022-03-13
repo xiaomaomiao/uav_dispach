@@ -2,6 +2,7 @@ package com.ssy.uav_dispatch.tcp.handler;
 
 import com.ssy.uav_dispatch.websocket.WebSocketServer;
 import com.ssy.uav_dispatch.websocket.handler.MainPageWebSocketHandler;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -51,6 +52,6 @@ public class NewChannelConnectedHandler extends ChannelInboundHandlerAdapter {
 
     public void sendMessage(Integer channlNumber, String message) {
         System.out.println("发送消息给SSY:" + channlNumber + " " + CONNECTION_MAPPINGS.get(channlNumber));
-        CONNECTION_MAPPINGS.get(channlNumber).writeAndFlush(message);
+        CONNECTION_MAPPINGS.get(channlNumber).writeAndFlush(Unpooled.copiedBuffer(message.getBytes()));
     }
 }
